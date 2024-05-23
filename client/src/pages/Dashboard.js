@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Analytics from '../component/Analytics';
 import DashboardTable from '../component/DashboardTable';
 import apiService from '../utils/api.service';
+import { mockData } from '../utils/mock-data';
 
 const Dashboard = () => {
     const { id } = useParams();
@@ -14,7 +15,8 @@ const Dashboard = () => {
     const [error, setError] = useState('')
 
     useEffect(() => {
-        apiService.getAnalytics(id)
+        if(id !== 'demo'){
+            apiService.getAnalytics(id)
             .then(response => {
                 const responseData = response.data.data;
                 const publicFiles = responseData.files.filter(file => file.permissions?.some(permission => permission.type === 'anyone'))
@@ -31,17 +33,27 @@ const Dashboard = () => {
                 console.error(error);
                 setError(error.message);
             });
+        }else{
+            setData(mockData);
+        }
+       
     }, [id]);
 
     const handleRevoke = () => {
-        apiService.revoke(id)
+        if(id !== 'demo'){
+            apiService.revoke(id)
             .then(response => {
                 setOpen(true);
-                navigate('/')
+                navigate('/');
             })
             .catch(error => {
                 console.error(error);
             });
+        }else{
+            setOpen(true);
+            navigate('/');
+        }
+       
     };
 
     if (!data || error) {
